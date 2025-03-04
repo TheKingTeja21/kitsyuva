@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DJ Night Registration</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <!-- Header Section -->
+    <header class="relative">
+        <!-- Background Image -->
+        <div class="absolute inset-0 z-0 h-96 w-full overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900"></div>
+            <div style="background-image: url('/api/placeholder/1200/500'); background-size: cover; background-position: center; filter: brightness(0.7);" class="w-full h-full"></div>
+        </div>
+        
+        <!-- Header Content -->
+        <div class="container mx-auto px-4 pt-20 pb-16 relative z-10">
+            <nav class="flex justify-between items-center mb-16">
+                <div class="text-2xl font-bold">DJ NIGHT 2025</div>
+                <div class="space-x-4">
+                    <a href="#about" class="hover:text-blue-400 transition">About</a>
+                    <a href="#register" class="hover:text-blue-400 transition">Register</a>
+                </div>
+            </nav>
+            
+            <div class="text-center">
+                <h1 class="text-5xl md:text-7xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-600">ELECTRIC BEATS</h1>
+                <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">Experience a night of pulsating beats and electric energy</p>
+                
+                <!-- Date and Time Info -->
+                <div class="flex flex-col md:flex-row justify-center items-center gap-6 mb-10">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>March 21, 2025</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>6:00 PM - 11:00 PM</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span>College Auditorium</span>
+                    </div>
+                </div>
+                
+                <!-- Countdown Timer -->
+                <div class="mb-8">
+                    <h2 class="text-xl mb-4">Event Begins In:</h2>
+                    <div class="flex justify-center gap-4">
+                        <div class="bg-gray-800 rounded-lg p-3 min-w-[80px]">
+                            <div id="days" class="text-3xl font-bold">00</div>
+                            <div class="text-xs text-gray-400">DAYS</div>
+                        </div>
+                        <div class="bg-gray-800 rounded-lg p-3 min-w-[80px]">
+                            <div id="hours" class="text-3xl font-bold">00</div>
+                            <div class="text-xs text-gray-400">HOURS</div>
+                        </div>
+                        <div class="bg-gray-800 rounded-lg p-3 min-w-[80px]">
+                            <div id="minutes" class="text-3xl font-bold">00</div>
+                            <div class="text-xs text-gray-400">MINUTES</div>
+                        </div>
+                        <div class="bg-gray-800 rounded-lg p-3 min-w-[80px]">
+                            <div id="seconds" class="text-3xl font-bold">00</div>
+                            <div class="text-xs text-gray-400">SECONDS</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="#register" class="inline-block bg-gradient-to-r from-purple-500 to-blue-500 text-white font-bold py-3 px-8 rounded-full hover:from-purple-600 hover:to-blue-600 transition transform hover:scale-105">
+                    Register Now
+                </a>
+            </div>
+        </div>
+    </header>
+    
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-gray-800">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-8 text-center">About The Event</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-700 p-6 rounded-lg">
+                    <div class="text-purple-400 text-4xl mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Top DJs Lineup</h3>
+                    <p class="text-gray-300">Experience mind-blowing performances from our lineup of top DJs who will take you on a musical journey across various genres.</p>
+                </div>
+                
+                <div class="bg-gray-700 p-6 rounded-lg">
+                    <div class="text-blue-400 text-4xl mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Light Show</h3>
+                    <p class="text-gray-300">Immerse yourself in a spectacular light show that synchronizes with the beats for a complete sensory experience.</p>
+                </div>
+                
+                <div class="bg-gray-700 p-6 rounded-lg">
+                    <div class="text-green-400 text-4xl mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Food & Drinks</h3>
+                    <p class="text-gray-300">Enjoy a variety of refreshments and snacks available throughout the event to keep your energy levels high.</p>
+                </div>
+            </div>
+            
+            <div class="mt-12 bg-gray-700 p-8 rounded-lg">
+                <h3 class="text-2xl font-bold mb-4">Event Highlights</h3>
+                <ul class="list-disc pl-5 space-y-2 text-gray-300">
+                    <li>Multiple DJ sets featuring various music genres</li>
+                    <li>State-of-the-art sound system for an immersive audio experience</li>
+                    <li>Special effects including fog machines and laser lights</li>
+                    <li>Dance performances by student groups</li>
+                    <li>Photo booth for capturing memories with friends</li>
+                    <li>Limited edition event merchandise available for purchase</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Registration Form Section -->
+    <section id="register" class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-8 text-center">Register for DJ Night</h2>
+            
+            <div class="max-w-xl mx-auto bg-gray-800 rounded-lg p-8">
+                <div class="mb-6 text-center">
+                    <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                        Ticket Price: ₹299 per person
+                    </span>
+                </div>
+                
+                <form id="registrationForm">
+                    <input type="hidden" id="eventName" name="eventName" value="DJ Night - Electric Beats">
+                    <input type="hidden" id="price" name="price" value="299">
+                    
+                    <div class="space-y-6" id="participantsContainer">
+                        <!-- First participant (primary) -->
+                        <div class="participant-info" data-index="0">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-medium">Participant Details</h3>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="name_0" class="block text-sm font-medium mb-1">Full Name</label>
+                                    <input type="text" id="name_0" name="participants[0][name]" class="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" required>
+                                </div>
+                                <div>
+                                    <label for="email_0" class="block text-sm font-medium mb-1">Email</label>
+                                    <input type="email" id="email_0" name="participants[0][email]" class="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" required>
+                                </div>
+                                <div>
+                                    <label for="phone_0" class="block text-sm font-medium mb-1">Phone Number</label>
+                                    <input type="tel" id="phone_0" name="participants[0][phone]" class="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" required>
+                                </div>
+                                <div>
+                                    <label for="college_0" class="block text-sm font-medium mb-1">College/Institution</label>
+                                    <input type="text" id="college_0" name="participants[0][college]" class="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 mb-6">
+                        <button type="button" id="addParticipantBtn" class="text-blue-400 hover:text-blue-300 font-medium flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            Add Another Participant
+                        </button>
+                    </div>
+                    
+                    <div class="bg-gray-700 p-4 rounded-lg mb-6">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">Total Participants:</span>
+                            <span id="participantCount">1</span>
+                        </div>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="font-medium">Total Amount:</span>
+                            <span id="totalAmount">₹299</span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:from-purple-600 hover:to-blue-600 transition">
+                            Proceed to Payment
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="loadingIndicator" class="text-center py-4 hidden">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                    <p class="mt-2">Processing your registration...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 py-8">
+        <div class="container mx-auto px-4 text-center text-gray-400">
+            <p>© 2025 DJ Night - Electric Beats. All rights reserved.</p>
+            <p class="mt-2">For inquiries, contact: events@example.com</p>
+        </div>
+    </footer>
+    
+    <!-- Payment Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-800 rounded-lg p-8 max-w-md w-full">
+            <div class="text-center">
+                <div class="text-green-500 text-5xl mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">Registration Successful!</h3>
+                <p class="mb-6 text-gray-300">Your payment was processed successfully. Your tickets will be emailed to you shortly.</p>
+                <div class="flex justify-center">
+                    <button id="closeSuccessModal" class="bg-blue-500 text-white font-medium py-2 px-6 rounded hover:bg-blue-600 transition">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        $(document).ready(function() {
+            // API URL - change this to match your server
+            const API_BASE_URL = 'http://localhost:5000';
+            
+            // Set countdown timer to March 21, 2025, 6:00 PM
+            const eventDate = new Date("March 21, 2025 18:00:00").getTime();
+            
+            // Update countdown every second
+            const countdownTimer = setInterval(function() {
+                // Get current date and time
+                const now = new Date().getTime();
+                
+                // Find the distance between now and the event date
+                const distance = eventDate - now;
+                
+                // Time calculations for days, hours, minutes and seconds
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                // Display the result
+                document.getElementById("days").innerHTML = days.toString().padStart(2, "0");
+                document.getElementById("hours").innerHTML = hours.toString().padStart(2, "0");
+                document.getElementById("minutes").innerHTML = minutes.toString().padStart(2, "0");
+                document.getElementById("seconds").innerHTML = seconds.toString().padStart(2, "0");
+                
+                // If the countdown is finished, display expired message
+                if (distance < 0) {
+                    clearInterval(countdownTimer);
+                    document.getElementById("days").innerHTML = "00";
+                    document.getElementById("hours").innerHTML = "00";
+                    document.getElementById("minutes").innerHTML = "00";
+                    document.getElementById("seconds").innerHTML = "00";
+                }
+            }, 1000);
+            
+            // Add Participant Button
+            let participantCount = 1;
+            const basePrice = 299;
+            
+            $("#addParticipantBtn").click(function() {
+                const newIndex = participantCount;
+                
+                const newParticipant = `
+                    <div class="participant-info mt-8 pt-8 border-t border-gray-700" data-index="${newIndex}">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-medium">Participant ${newIndex + 1}</h3>
+                            <button type="button" class="remove-participant text-red-400 hover:text-red-300 text-sm" data-index="${newIndex}">
+                                Remove
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="name_${newIndex}" class="block text-sm font-medium mb-1">Full Name</label>
+                                <input type="text" id="name_${newIndex}" name="participants[${newIndex}][name]" class="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" required>
+                            </div>
+                            <div>
+                                <label for="email_${newIndex}" class="block text-sm font-medium mb-1">Email</label>
+                                <input type="email" id="email_${newIndex}" name="participants[${newIndex}][email]" class="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" required>
+                            </div>
+                            <div>
+                                <label for="phone_${newIndex}" class="block text-sm font-medium mb-1">Phone Number</label>
+                                <input type="tel" id="phone_${newIndex}" name="participants[${newIndex}][phone]" class="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" required>
+                            </div>
+                            <div>
+                                <label for="college_${newIndex}" class="block text-sm font-medium mb-1">College/Institution</label>
+                                <input type="text" id="college_${newIndex}" name="participants[${newIndex}][college]" class="w-full p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" required>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                $("#participantsContainer").append(newParticipant);
+                participantCount++;
+                updateTotals();
+            });
+            
+            // Remove participant
+            $(document).on("click", ".remove-participant", function() {
+                const index = $(this).data("index");
+                $(`.participant-info[data-index="${index}"]`).remove();
+                participantCount--;
+                updateTotals();
+            });
+            
+            // Update totals
+            function updateTotals() {
+                $("#participantCount").text(participantCount);
+                $("#totalAmount").text(`₹${participantCount * basePrice}`);
+                $("#price").val(participantCount * basePrice);
+            }
+            
+            // Form submission
+            $("#registrationForm").submit(function(e) {
+                e.preventDefault();
+                
+                // Show loading indicator
+                $("#submitBtn").prop("disabled", true);
+                $("#loadingIndicator").removeClass("hidden");
+                
+                // Collect form data
+                const formData = new FormData();
+                formData.append("eventName", $("#eventName").val());
+                formData.append("price", $("#price").val());
+                
+                // Collect participant data
+                const participants = [];
+                
+                $(".participant-info").each(function() {
+                    const index = $(this).data("index");
+                    const name = $(`#name_${index}`).val();
+                    const email = $(`#email_${index}`).val();
+                    const phone = $(`#phone_${index}`).val();
+                    const college = $(`#college_${index}`).val();
+                    
+                    participants.push({
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        college: college
+                    });
+                });
+                
+                formData.append("participants", JSON.stringify(participants));
+                
+                // Submit to API
+                $.ajax({
+                    url: `${API_BASE_URL}/initiate-payment`,
+                    method: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.success) {
+                            // Store transaction ID in localStorage for later use
+                            localStorage.setItem("dj_night_txn_id", response.merchantTransactionId);
+                            
+                            // Redirect to payment page
+                            window.location.href = response.paymentUrl;
+                        } else {
+                            alert("Error: " + response.error);
+                            $("#submitBtn").prop("disabled", false);
+                            $("#loadingIndicator").addClass("hidden");
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert("Error connecting to server. Please try again later.");
+                        console.error(error);
+                        $("#submitBtn").prop("disabled", false);
+                        $("#loadingIndicator").addClass("hidden");
+                    }
+                });
+            });
+            
+            // Check for payment status on page load (for redirects back from payment)
+            function checkPaymentStatus() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const txnId = urlParams.get("txnId");
+                
+                if (txnId) {
+                    $.ajax({
+                        url: `${API_BASE_URL}/check-payment-status`,
+                        method: "GET",
+                        data: { merchantTransactionId: txnId },
+                        success: function(response) {
+                            if (response.success && (response.status === "SUCCESS" || response.status === "PAYMENT_SUCCESS")) {
+                                // Show success modal
+                                $("#successModal").removeClass("hidden");
+                            }
+                        }
+                    });
+                }
+            }
+            
+            // Close success modal
+            $("#closeSuccessModal").click(function() {
+                $("#successModal").addClass("hidden");
+                // Clean up URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            });
+            
+            // Check payment status on page load
+            checkPaymentStatus();
+        });
+    </script>
+</body>
+</html>

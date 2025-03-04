@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Event Registration</title>
+    <link rel="stylesheet" href="./css/reg_style.css" />
+  </head>
+  <body>
+    <!-- Success Popup -->
+    <div id="successPopup" class="popup" style="display: none">
+      <div class="popup-content">
+        <div class="checkmark">
+          <svg viewBox="0 0 52 52">
+            <circle class="circle" cx="26" cy="26" r="25" fill="none" />
+            <path class="check" fill="none" d="M14 27l7 7 16-16" />
+          </svg>
+        </div>
+        <h2>Registration Successful!</h2>
+        <p>Your registration has been successfully submitted.</p>
+      </div>
+    </div>
+
+    <div class="container">
+      <h2>Cultural Event Registration</h2>
+
+      <form id="registrationForm">
+        <label for="eventSelect">Select Event:</label>
+        <select id="eventSelect" required>
+          <option value="" disabled selected>Select an Event</option>
+          <!-- Original Events -->
+          <option
+            value="act_it_out_solo"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="30"
+          >
+            Act it out - Solo
+          </option>
+          <option
+            value="act_it_out_team"
+            data-members="4"
+            data-price-type="per_team"
+            data-price="250"
+          >
+            Act it out - Team
+          </option>
+          <option
+            value="paint_me_blind"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="50"
+          >
+            Paint me blind
+          </option>
+          <option
+            value="drawing"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="50"
+          >
+            Drawing
+          </option>
+          <option
+            value="snaphunt"
+            data-members="4"
+            data-price-type="per_team"
+            data-price="250"
+          >
+            SnapHunt
+          </option>
+          <option
+            value="singing_solo"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="50"
+          >
+            Singing - Solo
+          </option>
+          <option
+            value="singing_duo"
+            data-members="2"
+            data-price-type="per_team"
+            data-price="100"
+          >
+            Singing - Duo
+          </option>
+          <option
+            value="lip_sync_battle"
+            data-members="2"
+            data-price-type="per_team"
+            data-price="100"
+          >
+            Lip Sync Battle
+          </option>
+          <option
+            value="pictionary"
+            data-members="2"
+            data-price-type="per_team"
+            data-price="100"
+          >
+            Pictionary
+          </option>
+          <option
+            value="photo_mania"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            Photo Mania
+          </option>
+          <option
+            value="eco_shot"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            Eco Shot
+          </option>
+          <option
+            value="trend_setters"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            Trend Setters (per reel)
+          </option>
+          <option
+            value="dance_solo"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            Dance - Solo
+          </option>
+          <option
+            value="dance_group"
+            data-members-min="2"
+            data-members-max="10"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            Dance - Group
+          </option>
+          <option
+            value="dance_classical"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            Dance - Classical
+          </option>
+          <option
+            value="parade_lines_basic"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            Parade Lines (Self)
+          </option>
+          <option
+            value="parade_lines_costume"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="200"
+          >
+            Parade Lines (With Costume)
+          </option>
+        </select>
+
+        <div id="teamSizeSelector" style="display: none">
+          <label for="teamSize">Select Team Size:</label>
+          <select id="teamSize">
+            <!-- Options will be dynamically populated -->
+          </select>
+        </div>
+
+        <label for="eventFee">Event Fee:</label>
+        <input type="text" id="eventFee" readonly />
+
+        <!-- Participant Details -->
+        <label>Participants:</label>
+        <div id="participantContainer"></div>
+
+        <!-- Payment Status Section -->
+        <div
+          id="paymentStatus"
+          style="
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+          "
+        >
+          <p>Payment Status: <span id="paymentStatusText">Initiated</span></p>
+          <p id="transactionDetails"></p>
+        </div>
+
+        <!-- Pay Button -->
+        <button type="button" id="payButton" class="payment-btn">
+          Pay with PhonePe
+        </button>
+      </form>
+    </div>
+
+    <script>
+      // Establish API base URL
+      const API_BASE_URL = "http://127.0.0.1:5000";
+      let currentMerchantTransactionId = null;
+      let paymentVerificationInterval = null;
+
+      document
+        .getElementById("eventSelect")
+        .addEventListener("change", function () {
+          let selectedOption = this.options[this.selectedIndex];
+          let eventValue = selectedOption.value;
+
+          // Get team size details
+          let fixedMembers = selectedOption.getAttribute("data-members");
+          let minMembers = selectedOption.getAttribute("data-members-min");
+          let maxMembers = selectedOption.getAttribute("data-members-max");
+          let price = selectedOption.getAttribute("data-price");
+          let priceType =
+            selectedOption.getAttribute("data-price-type") || "fixed"; // default to fixed price
+
+          let teamSizeSelector = document.getElementById("teamSizeSelector");
+          let teamSizeSelect = document.getElementById("teamSize");
+
+          // Clear team size dropdown
+          teamSizeSelect.innerHTML = "";
+
+          // Handle variable team size
+          if (minMembers && maxMembers) {
+            teamSizeSelector.style.display = "block";
+
+            for (let i = parseInt(minMembers); i <= parseInt(maxMembers); i++) {
+              let option = document.createElement("option");
+              option.value = i;
+              option.textContent = i + (i === 1 ? " Member" : " Members");
+              teamSizeSelect.appendChild(option);
+            }
+
+            // Set default price for minimum team size
+            updateParticipantsAndPrice(
+              parseInt(minMembers),
+              price,
+              priceType,
+              eventValue
+            );
+          } else if (fixedMembers) {
+            // Fixed team size
+            teamSizeSelector.style.display = "none";
+            updateParticipantsAndPrice(
+              parseInt(fixedMembers),
+              price,
+              priceType,
+              eventValue
+            );
+          }
+        });
+
+      document
+        .getElementById("teamSize")
+        .addEventListener("change", function () {
+          let selectedEvent = document.getElementById("eventSelect");
+          let selectedOption =
+            selectedEvent.options[selectedEvent.selectedIndex];
+          let members = this.value;
+          let price = selectedOption.getAttribute("data-price");
+          let priceType =
+            selectedOption.getAttribute("data-price-type") || "fixed";
+          let eventValue = selectedOption.value;
+
+          updateParticipantsAndPrice(
+            parseInt(members),
+            price,
+            priceType,
+            eventValue
+          );
+        });
+
+      // Pay with PhonePe button
+      document
+        .getElementById("payButton")
+        .addEventListener("click", function () {
+          // First validate the form
+          if (!validateForm()) {
+            return;
+          }
+
+          // Then initiate payment
+          initiatePhonePePayment();
+        });
+
+      function validateForm() {
+        // Check if an event is selected
+        const eventSelect = document.getElementById("eventSelect");
+        if (eventSelect.value === "") {
+          alert("Please select an event");
+          return false;
+        }
+
+        // Validate participant fields
+        const participantContainer = document.getElementById(
+          "participantContainer"
+        );
+        const requiredInputs = participantContainer.querySelectorAll(
+          "input[required], select[required]"
+        );
+
+        for (let input of requiredInputs) {
+          if (!input.value) {
+            alert("Please fill in all required participant information");
+            input.focus();
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      // Function to update sections based on year and branch
+      function updateSections(yearSelect, sectionSelect, branchSelect) {
+        const year = yearSelect.value;
+        const branch = branchSelect.value;
+
+        // Clear existing options
+        sectionSelect.innerHTML =
+          '<option value="" disabled selected>Select Section</option>';
+
+        // If 1st year CSE, show 8 sections
+        if (year === "1" && branch === "CSE") {
+          for (let i = 1; i <= 8; i++) {
+            let option = document.createElement("option");
+            option.value = i;
+            option.textContent = i.toString();
+            sectionSelect.appendChild(option);
+          }
+        } else {
+          // Default sections A, B, C, D for other years/branches
+          ["A", "B", "C", "D"].forEach((section) => {
+            let option = document.createElement("option");
+            option.value = section;
+            option.textContent = section;
+            sectionSelect.appendChild(option);
+          });
+        }
+      }
+
+      function updateParticipantsAndPrice(
+        members,
+        price,
+        priceType,
+        eventValue
+      ) {
+        let totalPrice = 0;
+
+        // Calculate price based on type
+        if (priceType === "per_head") {
+          totalPrice = members * parseInt(price);
+          document.getElementById(
+            "eventFee"
+          ).value = `₹${totalPrice} (₹${price} per member)`;
+        } else if (priceType === "per_team") {
+          totalPrice = parseInt(price);
+          document.getElementById(
+            "eventFee"
+          ).value = `₹${totalPrice} (per team)`;
+        } else {
+          // Fixed price
+          totalPrice = parseInt(price);
+          document.getElementById("eventFee").value = `₹${totalPrice}`;
+        }
+
+        // Update participant fields
+        let participantContainer = document.getElementById(
+          "participantContainer"
+        );
+        participantContainer.innerHTML = "";
+
+        for (let i = 1; i <= members; i++) {
+          let div = document.createElement("div");
+          div.classList.add("participant");
+
+          // Base fields for all events with branch field added
+          let baseFields = `
+        <label>Participant ${i} Name:</label>
+        <input type="text" name="participant${i}" required placeholder="Enter name">
+
+        <label>Participant ${i} Roll No:</label>
+        <input type="text" name="rollno${i}" required placeholder="Enter roll number">
+
+        <label>Participant ${i} Branch:</label>
+        <select name="branch${i}" id="branch${i}" required>
+            <option value="" disabled selected>Select Branch</option>
+            <option value="CSE">CSE</option>
+            <option value="ECE">ECE</option>
+            <option value="EEE">EEE</option>
+            <option value="MECH">MECH</option>
+            <option value="CIVIL">CIVIL</option>
+            <option value="IT">IT</option>
+        </select>
+
+        <label>Participant ${i} Year:</label>
+        <select name="year${i}" id="year${i}" required>
+            <option value="" disabled selected>Select Year</option>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+        </select>
+
+        <label>Participant ${i} Section:</label>
+        <select name="section${i}" id="section${i}" required>
+            <option value="" disabled selected>Select Section</option>
+        </select>
+      `;
+
+          // Event-specific fields
+          let eventFields = "";
+
+          // Add custom fields based on event type
+          switch (eventValue) {
+            case "poster_presentation":
+            case "ppt_presentation":
+              eventFields += `
+            <label>Participant ${i} Topic:</label>
+            <input type="text" name="topic${i}" required placeholder="Enter presentation topic">
+          `;
+              break;
+
+            case "innovation_expo":
+              eventFields += `
+            <label>Participant ${i} Project Title:</label>
+            <input type="text" name="project${i}" required placeholder="Enter project title">
+            
+            <label>Participant ${i} Project Description:</label>
+            <textarea name="description${i}" required placeholder="Brief description of your project"></textarea>
+          `;
+              break;
+
+            case "coding_debugging":
+              eventFields += `
+            <label>Participant ${i} Preferred Programming Language:</label>
+            <select name="language${i}" required>
+              <option value="" disabled selected>Select Language</option>
+              <option value="C">C</option>
+              <option value="C++">C++</option>
+              <option value="Java">Java</option>
+              <option value="Python">Python</option>
+              <option value="JavaScript">JavaScript</option>
+            </select>
+          `;
+              break;
+
+            case "tech_talks":
+              eventFields += `
+            <label>Participant ${i} Talk Subject:</label>
+            <input type="text" name="subject${i}" required placeholder="Enter talk subject">
+            
+            <label>Participant ${i} Duration (minutes):</label>
+            <select name="duration${i}" required>
+              <option value="" disabled selected>Select Duration</option>
+              <option value="5">5 minutes</option>
+              <option value="10">10 minutes</option>
+              <option value="15">15 minutes</option>
+            </select>
+          `;
+              break;
+
+            case "wealth_out_of_waste":
+              eventFields += `
+            <label>Participant ${i} Material Requirements:</label>
+            <textarea name="materials${i}" placeholder="List any materials you need (optional)"></textarea>
+          `;
+              break;
+
+            // Add more event-specific fields as needed
+          }
+
+          div.innerHTML = baseFields + eventFields;
+          participantContainer.appendChild(div);
+
+          // Add event listeners to update sections based on year and branch
+          const yearSelect = document.getElementById(`year${i}`);
+          const branchSelect = document.getElementById(`branch${i}`);
+          const sectionSelect = document.getElementById(`section${i}`);
+
+          // Initial setup of sections
+          updateSections(yearSelect, sectionSelect, branchSelect);
+
+          // Update sections when year or branch changes
+          yearSelect.addEventListener("change", function () {
+            updateSections(yearSelect, sectionSelect, branchSelect);
+          });
+
+          branchSelect.addEventListener("change", function () {
+            updateSections(yearSelect, sectionSelect, branchSelect);
+          });
+        }
+      }
+
+      // Update in your frontend JavaScript
+      function initiatePhonePePayment() {
+        // Get selected event and price
+        let selectedEvent = document.getElementById("eventSelect");
+        if (!selectedEvent.value) {
+          alert("Please select an event");
+          return;
+        }
+
+        let eventName = selectedEvent.options[selectedEvent.selectedIndex].text;
+        let selectedOption = selectedEvent.options[selectedEvent.selectedIndex];
+        let priceType =
+          selectedOption.getAttribute("data-price-type") || "fixed";
+        let basePrice = selectedOption.getAttribute("data-price");
+
+        if (!basePrice) {
+          alert("Price information is missing");
+          return;
+        }
+
+        // Get team size
+        let teamSize;
+        if (
+          document.getElementById("teamSizeSelector").style.display !== "none"
+        ) {
+          teamSize = parseInt(document.getElementById("teamSize").value);
+        } else {
+          teamSize = parseInt(selectedOption.getAttribute("data-members") || 1);
+        }
+
+        // Calculate total price
+        let totalPrice;
+        if (priceType === "per_head") {
+          totalPrice = teamSize * parseInt(basePrice);
+        } else if (priceType === "per_team") {
+          totalPrice = parseInt(basePrice);
+        } else {
+          totalPrice = parseInt(basePrice);
+        }
+
+        // Collect participant data
+        let participants = [];
+        let participantContainer = document.getElementById(
+          "participantContainer"
+        );
+        let participantDivs =
+          participantContainer.querySelectorAll(".participant");
+
+        // Validate participant data
+        let isValid = true;
+
+        participantDivs.forEach((div, index) => {
+          const num = index + 1;
+
+          // Create participant object
+          let participant = {};
+
+          // Process all input elements for this participant
+          const inputs = div.querySelectorAll("input, select, textarea");
+
+          inputs.forEach((input) => {
+            if (input.hasAttribute("required") && !input.value) {
+              alert(
+                `Please fill in all required fields for Participant ${num}`
+              );
+              input.focus();
+              isValid = false;
+              return;
+            }
+
+            // Strip the number from the end to get the field name
+            const fieldName = input.name.replace(/\d+$/, "");
+            participant[fieldName] = input.value;
+          });
+
+          if (isValid) {
+            participants.push(participant);
+          }
+        });
+
+        if (!isValid || participants.length === 0) {
+          return; // Stop if validation failed
+        }
+
+        // Disable the button
+        const payButton = document.getElementById("payButton");
+        payButton.disabled = true;
+        payButton.textContent = "Processing...";
+
+        // Create form data for API
+        const formData = new FormData();
+        formData.append("eventName", eventName);
+        formData.append("price", totalPrice.toString());
+        formData.append("participants", JSON.stringify(participants));
+
+        console.log("Sending payment request with data:", {
+          eventName,
+          price: totalPrice.toString(),
+          participants: JSON.stringify(participants),
+        });
+
+        // Call the backend API to initiate payment
+        fetch(`${API_BASE_URL}/initiate-payment`, {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              // Store the merchant transaction ID
+              currentMerchantTransactionId = data.merchantTransactionId;
+
+              // Show status
+              document.getElementById("paymentStatus").style.display = "block";
+              document.getElementById(
+                "transactionDetails"
+              ).textContent = `Transaction ID: ${data.merchantTransactionId}`;
+
+              // Start checking payment status
+              startPaymentStatusCheck();
+
+              // Redirect to PhonePe payment page
+              window.location.href = data.paymentUrl;
+            } else {
+              // Re-enable button
+              payButton.disabled = false;
+              payButton.textContent = "Pay with PhonePe";
+
+              // Show error
+              alert(
+                `Payment initiation failed: ${data.error || "Unknown error"}`
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("Error initiating payment:", error);
+
+            // Re-enable button
+            payButton.disabled = false;
+            payButton.textContent = "Pay with PhonePe";
+
+            alert(
+              "Failed to connect to payment service. Please try again later."
+            );
+          });
+      }
+
+      function startPaymentStatusCheck() {
+        // Clear any existing interval
+        if (paymentVerificationInterval) {
+          clearInterval(paymentVerificationInterval);
+        }
+
+        // Set status text
+        document.getElementById("paymentStatusText").textContent = "Processing";
+
+        // Check every 5 seconds
+        paymentVerificationInterval = setInterval(checkPaymentStatus, 5000);
+      }
+
+      function checkPaymentStatus() {
+        if (!currentMerchantTransactionId) return;
+
+        fetch(
+          `${API_BASE_URL}/check-payment-status?merchantTransactionId=${currentMerchantTransactionId}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              const status = data.status;
+              document.getElementById("paymentStatusText").textContent = status;
+
+              // If payment is completed (success or failure), stop checking
+              if (status === "SUCCESS" || status === "PAYMENT_SUCCESS") {
+                clearInterval(paymentVerificationInterval);
+                showSuccessPopup();
+              } else if (status.includes("FAIL") || status === "ERROR") {
+                clearInterval(paymentVerificationInterval);
+
+                // Re-enable payment button
+                const payButton = document.getElementById("payButton");
+                payButton.disabled = false;
+                payButton.textContent = "Retry Payment";
+              }
+            }
+          })
+          .catch((error) => {
+            console.error("Error checking payment status:", error);
+          });
+      }
+
+      function showSuccessPopup() {
+        document.getElementById("successPopup").style.display = "flex";
+
+        // Hide popup after 5 seconds
+        setTimeout(() => {
+          document.getElementById("successPopup").style.display = "none";
+        }, 5000);
+      }
+    </script>
+  </body>
+</html>

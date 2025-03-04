@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-blue-600 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Event Registration Dashboard</h1>
+            <div>
+                <button id="refreshButton" class="bg-white text-blue-600 px-4 py-2 rounded hover:bg-blue-100 transition">
+                    Refresh Data
+                </button>
+                <button id="exportButton" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition ml-2">
+                    Export Data
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-4 mt-6">
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-4">Filter Registrations</h2>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                <div>
+                    <label for="eventSelect" class="block text-sm font-medium text-gray-700 mb-1">Event Name</label>
+                    <select id="eventSelect" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">All Events</option>
+                        <!-- Event options will be populated here -->
+                    </select>
+                </div>
+                <div>
+                    <label for="branchFilter" class="block text-sm font-medium text-gray-700 mb-1">Branch</label>
+                    <select id="branchFilter" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">All Branches</option>
+                        <option value="CSE">CSE</option>
+                        <option value="ECE">ECE</option>
+                        <option value="ME">ME</option>
+                        <option value="CE">CE</option>
+                        <option value="EEE">EEE</option>
+                        <option value="IT">IT</option>
+                        <!-- Add more branch options as needed -->
+                    </select>
+                </div>
+                <div>
+                    <label for="yearFilter" class="block text-sm font-medium text-gray-700 mb-1">Year</label>
+                    <select id="yearFilter" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">All Years</option>
+                        <option value="1">1st Year</option>
+                        <option value="2">2nd Year</option>
+                        <option value="3">3rd Year</option>
+                        <option value="4">4th Year</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="searchInput" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                    <input type="text" id="searchInput" placeholder="Transaction ID or Name" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <button id="filterButton" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition w-full">
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Event Registrations</h2>
+                <span id="totalRegistrations" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                    0 registrations
+                </span>
+            </div>
+            
+            <div id="loadingIndicator" class="py-8 text-center text-gray-500">
+                <p>Loading registrations...</p>
+            </div>
+            
+            <div id="noDataMessage" class="py-8 text-center text-gray-500 hidden">
+                <p>No registrations found with the current filters.</p>
+            </div>
+
+            <div id="registrationsTable" class="hidden overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Event Name
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Transaction ID
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Price
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Participants
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Date
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="registrationsBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Registration rows will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Registration Details Modal -->
+    <div id="registrationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-screen overflow-y-auto">
+            <div class="p-6 border-b">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-semibold" id="modalTitle">Registration Details</h3>
+                    <button id="closeModal" class="text-gray-500 hover:text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6" id="modalContent">
+                <!-- Registration details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="exportModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
+            <div class="p-6 border-b">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-semibold">Export Participants</h3>
+                    <button id="closeExportModal" class="text-gray-500 hover:text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <p class="mb-4">Select an event to export participants data:</p>
+                <select id="exportEventSelect" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4">
+                    <option value="">Select Event</option>
+                    <!-- Event options will be populated here -->
+                </select>
+                <div class="flex justify-end">
+                    <button id="closeExportBtn" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition mr-2">
+                        Cancel
+                    </button>
+                    <button id="confirmExportBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                        Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API URL - change this to match your server
+        const API_BASE_URL = 'http://127.0.0.1:5000';
+        
+        // Global variables to store state
+        let allRegistrations = [];
+        let allParticipants = [];
+        let uniqueEvents = [];
+        let uniqueBranches = [];
+        let uniqueYears = [];
+        
+        $(document).ready(function() {
+            // Initial data fetch
+            fetchAllRegistrations();
+            
+            // Event listeners
+            $('#filterButton').click(applyFilters);
+            $('#refreshButton').click(fetchAllRegistrations);
+            $('#closeModal').click(closeModal);
+            $('#exportButton').click(openExportModal);
+            $('#closeExportModal, #closeExportBtn').click(closeExportModal);
+            $('#confirmExportBtn').click(exportParticipants);
+            
+            // Add keyup event for search input to enable real-time search
+            $('#searchInput').on('keyup', function(e) {
+                // Apply filters if Enter key is pressed
+                if (e.key === 'Enter') {
+                    applyFilters();
+                }
+            });
+        });
+        
+        // Fetch all registrations
+        function fetchAllRegistrations() {
+            $('#loadingIndicator').show();
+            $('#registrationsTable').hide();
+            $('#noDataMessage').hide();
+            
+            $.ajax({
+                url: `${API_BASE_URL}/get-registrations`,
+                method: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        allRegistrations = response.registrations;
+                        processRegistrations(allRegistrations);
+                        extractAllParticipants(allRegistrations);
+                        populateEventOptions(allRegistrations);
+                    } else {
+                        showError('Failed to fetch registrations');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showError('Error connecting to server: ' + error);
+                    console.error('Error details:', xhr.responseText);
+                    $('#loadingIndicator').hide();
+                    $('#noDataMessage').show();
+                }
+            });
+        }
+
+        // Extract all participants from registrations
+        function extractAllParticipants(registrations) {
+            allParticipants = [];
+            uniqueBranches = new Set();
+            uniqueYears = new Set();
+            
+            registrations.forEach(function(reg) {
+                if (reg.participants && Array.isArray(reg.participants)) {
+                    reg.participants.forEach(function(participant) {
+                        // Add event information to each participant
+                        const participantWithEvent = {
+                            ...participant,
+                            event_name: reg.event_name,
+                            transaction_id: reg.transaction_id,
+                            reg_id: reg.id
+                        };
+                        
+                        allParticipants.push(participantWithEvent);
+                        
+                        // Collect unique branches and years for filters
+                        if (participant.branch) {
+                            uniqueBranches.add(participant.branch);
+                        }
+                        
+                        if (participant.year) {
+                            uniqueYears.add(participant.year);
+                        }
+                    });
+                }
+            });
+            
+            // Update branch filter options
+            if (uniqueBranches.size > 0) {
+                $('#branchFilter option:not(:first)').remove();
+                Array.from(uniqueBranches).sort().forEach(function(branch) {
+                    $('#branchFilter').append(`<option value="${branch}">${branch}</option>`);
+                });
+            }
+            
+            // Update year filter options
+            if (uniqueYears.size > 0) {
+                $('#yearFilter option:not(:first)').remove();
+                Array.from(uniqueYears).sort().forEach(function(year) {
+                    $('#yearFilter').append(`<option value="${year}">${year}${getYearSuffix(year)} Year</option>`);
+                });
+            }
+        }
+        
+        // Apply filters (event, branch, year, search)
+        function applyFilters() {
+            const selectedEvent = $('#eventSelect').val();
+            const selectedBranch = $('#branchFilter').val();
+            const selectedYear = $('#yearFilter').val();
+            const searchQuery = $('#searchInput').val().trim().toLowerCase();
+            
+            let filteredRegistrations = [...allRegistrations];
+            
+            // If only event filter and no search query, we can use the backend filter
+            if (selectedEvent && !selectedBranch && !selectedYear && !searchQuery) {
+                fetchRegistrationsByEvent(selectedEvent);
+                return;
+            }
+            
+            // Event filter
+            if (selectedEvent) {
+                filteredRegistrations = filteredRegistrations.filter(reg => 
+                    reg.event_name === selectedEvent
+                );
+            }
+            
+            // Transaction ID search
+            if (searchQuery) {
+                filteredRegistrations = filteredRegistrations.filter(reg => {
+                    // Check if transaction ID matches
+                    if (reg.transaction_id && reg.transaction_id.toLowerCase().includes(searchQuery)) {
+                        return true;
+                    }
+                    
+                    // Check if any participant name matches
+                    if (reg.participants && Array.isArray(reg.participants)) {
+                        return reg.participants.some(participant => {
+                            // Check name fields (first_name, last_name, name)
+                            if (participant.name && participant.name.toLowerCase().includes(searchQuery)) {
+                                return true;
+                            }
+                            if (participant.first_name && participant.first_name.toLowerCase().includes(searchQuery)) {
+                                return true;
+                            }
+                            if (participant.last_name && participant.last_name.toLowerCase().includes(searchQuery)) {
+                                return true;
+                            }
+                            return false;
+                        });
+                    }
+                    
+                    return false;
+                });
+            }
+            
+            // If branch or year is selected, we need to filter by participants
+            if (selectedBranch || selectedYear) {
+                filteredRegistrations = filteredRegistrations.filter(reg => {
+                    if (!reg.participants || !Array.isArray(reg.participants)) {
+                        return false;
+                    }
+                    
+                    return reg.participants.some(participant => {
+                        // Check branch filter
+                        const branchMatch = !selectedBranch || participant.branch === selectedBranch;
+                        
+                        // Check year filter
+                        const yearMatch = !selectedYear || participant.year === selectedYear;
+                        
+                        return branchMatch && yearMatch;
+                    });
+                });
+            }
+            
+            processRegistrations(filteredRegistrations);
+        }
+        
+        // Fetch registrations for a specific event
+        function fetchRegistrationsByEvent(eventName) {
+            $('#loadingIndicator').show();
+            $('#registrationsTable').hide();
+            $('#noDataMessage').hide();
+            
+            $.ajax({
+                url: `${API_BASE_URL}/get-registrations-by-event`,
+                method: 'GET',
+                data: { event_name: eventName },
+                success: function(response) {
+                    if (response.success) {
+                        processRegistrations(response.registrations);
+                    } else {
+                        showError('Failed to fetch registrations');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showError('Error connecting to server');
+                    console.error(error);
+                },
+                complete: function() {
+                    $('#loadingIndicator').hide();
+                }
+            });
+        }
+        
+        // Process and display registrations
+        function processRegistrations(registrations) {
+            $('#loadingIndicator').hide();
+            
+            if (registrations.length === 0) {
+                $('#noDataMessage').show();
+                $('#registrationsTable').hide();
+                $('#totalRegistrations').text('0 registrations');
+                return;
+            }
+            
+            $('#registrationsBody').empty();
+            
+            registrations.forEach(function(reg) {
+                // Format date
+                const createdDate = reg.created_at && reg.created_at.seconds 
+                    ? new Date(reg.created_at.seconds * 1000).toLocaleString() 
+                    : 'N/A';
+                
+                // Count participants
+                const participantCount = reg.participants ? reg.participants.length : 0;
+                
+                // Create row
+                const row = `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">${reg.event_name || 'N/A'}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-500">${reg.transaction_id || 'N/A'}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">₹${reg.price || '0'}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(reg.status)}">
+                                ${reg.status || 'N/A'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${participantCount} participant${participantCount !== 1 ? 's' : ''}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-500">${createdDate}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button class="view-details text-blue-600 hover:text-blue-900" data-id="${reg.id}">
+                                View Details
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                
+                $('#registrationsBody').append(row);
+            });
+            
+            $('#totalRegistrations').text(`${registrations.length} registration${registrations.length !== 1 ? 's' : ''}`);
+            $('#registrationsTable').show();
+            
+            // Attach event listeners to "View Details" buttons
+            $('.view-details').click(function() {
+                const regId = $(this).data('id');
+                fetchRegistrationDetails(regId);
+            });
+        }
+        
+        // Populate event filter options
+        function populateEventOptions(registrations) {
+            // Extract unique event names
+            uniqueEvents = [...new Set(registrations.map(reg => reg.event_name))].filter(Boolean).sort();
+            
+            // Clear existing options (except first one)
+            $('#eventSelect option:not(:first)').remove();
+            $('#exportEventSelect option:not(:first)').remove();
+            
+            // Add options
+            uniqueEvents.forEach(function(eventName) {
+                $('#eventSelect').append(`<option value="${eventName}">${eventName}</option>`);
+                $('#exportEventSelect').append(`<option value="${eventName}">${eventName}</option>`);
+            });
+        }
+        
+        // Fetch and display registration details
+        function fetchRegistrationDetails(registrationId) {
+            $.ajax({
+                url: `${API_BASE_URL}/get-registration/${registrationId}`,
+                method: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        showRegistrationDetails(response.registration);
+                    } else {
+                        alert('Failed to fetch registration details');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Error connecting to server');
+                    console.error(error);
+                }
+            });
+        }
+        
+        // Show registration details in modal
+        function showRegistrationDetails(registration) {
+            // Format date
+            const createdDate = registration.created_at && registration.created_at.seconds 
+                ? new Date(registration.created_at.seconds * 1000).toLocaleString() 
+                : 'N/A';
+                
+            // Format payment status
+            const statusClass = getStatusClass(registration.status);
+            const statusBadge = `
+                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                    ${registration.status || 'N/A'}
+                </span>
+            `;
+            
+            // Format participants data
+            let participantsHtml = '<p class="text-gray-500 italic">No participants data available</p>';
+            
+            if (registration.participants && registration.participants.length > 0) {
+                participantsHtml = '<div class="space-y-4">';
+                
+                registration.participants.forEach((participant, index) => {
+                    participantsHtml += `
+                        <div class="bg-gray-50 p-4 rounded">
+                            <h4 class="font-medium text-gray-900">Participant ${index + 1}</h4>
+                            <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
+                    `;
+                    
+                    // Loop through participant properties
+                    Object.entries(participant).forEach(([key, value]) => {
+                        if (value) {
+                            participantsHtml += `
+                                <div>
+                                    <span class="text-sm text-gray-500">${formatLabel(key)}:</span>
+                                    <span class="ml-1 text-sm font-medium">${value}</span>
+                                </div>
+                            `;
+                        }
+                    });
+                    
+                    participantsHtml += `
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                participantsHtml += '</div>';
+            }
+            
+            // Create modal content
+            const modalContent = `
+                <div class="space-y-6">
+                    <div class="flex justify-between">
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900">Event Details</h3>
+                            <p class="text-2xl font-bold mt-1">${registration.event_name || 'N/A'}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm text-gray-500">Status</div>
+                            <div class="mt-1">${statusBadge}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <div class="text-sm text-gray-500">Transaction ID</div>
+                            <div class="mt-1 font-medium">${registration.transaction_id || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-500">Amount Paid</div>
+                            <div class="mt-1 font-medium">₹${registration.price || '0'}</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-500">Registration Date</div>
+                            <div class="mt-1 font-medium">${createdDate}</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-3">Participant Information</h3>
+                        ${participantsHtml}
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-3">Payment Information</h3>
+                        <div class="bg-gray-50 p-4 rounded">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <div>
+                                    <span class="text-sm text-gray-500">Payment Method:</span>
+                                    <span class="ml-1 text-sm font-medium">${registration.payment_method || 'N/A'}</span>
+                                </div>
+                                <div>
+                                    <span class="text-sm text-gray-500">Transaction ID:</span>
+                                    <span class="ml-1 text-sm font-medium">${registration.transaction_id || 'N/A'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Update modal title and content
+            $('#modalTitle').text(`Registration Details - ${registration.event_name}`);
+            $('#modalContent').html(modalContent);
+            
+            // Show modal
+            $('#registrationModal').removeClass('hidden');
+        }
+        
+        // Open export modal
+        function openExportModal() {
+            $('#exportModal').removeClass('hidden');
+        }
+        
+        // Close export modal
+        function closeExportModal() {
+            $('#exportModal').addClass('hidden');
+        }
+        
+        // Export participants data
+        function exportParticipants() {
+            const eventName = $('#exportEventSelect').val();
+            
+            if (!eventName) {
+                alert('Please select an event to export');
+                return;
+            }
+            
+            $.ajax({
+                url: `${API_BASE_URL}/export-participants`,
+                method: 'GET',
+                data: { event_name: eventName },
+                success: function(response) {
+                    if (response.success) {
+                        // Convert to CSV
+                        const participants = response.participants;
+                        if (participants.length === 0) {
+                            alert('No participants found for this event');
+                            return;
+                        }
+                        
+                        downloadCSV(participants, `${eventName}_participants.csv`);
+                        closeExportModal();
+                    } else {
+                        alert('Failed to export participants');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Error connecting to server');
+                    console.error(error);
+                }
+            });
+        }
+        
+        // Convert data to CSV and download
+        function downloadCSV(data, filename) {
+            // Get all possible headers from all objects
+            const headers = [];
+            data.forEach(obj => {
+                Object.keys(obj).forEach(key => {
+                    if (!headers.includes(key)) {
+                        headers.push(key);
+                    }
+                });
+            });
+            
+            // Create CSV content
+            let csvContent = headers.join(',') + '\n';
+            
+            data.forEach(obj => {
+                const row = headers.map(header => {
+                    const value = obj[header] !== undefined ? obj[header] : '';
+                    // Escape quotes and wrap in quotes if contains comma
+                    return typeof value === 'string' && (value.includes(',') || value.includes('"')) 
+                        ? `"${value.replace(/"/g, '""')}"` 
+                        : value;
+                });
+                csvContent += row.join(',') + '\n';
+            });
+            
+            // Create download link
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Close modal
+        function closeModal() {
+            $('#registrationModal').addClass('hidden');
+        }
+        
+        // Helper: Get badge class based on status
+        function getStatusClass(status) {
+            if (!status) return 'bg-gray-100 text-gray-800';
+            
+            const statusLower = status.toLowerCase();
+            
+            if (statusLower.includes('success')) {
+                return 'bg-green-100 text-green-800';
+            } else if (statusLower.includes('fail') || statusLower.includes('error')) {
+                return 'bg-red-100 text-red-800';
+            } else if (statusLower.includes('pending') || statusLower.includes('initiated')) {
+                return 'bg-yellow-100 text-yellow-800';
+            } else {
+                return 'bg-gray-100 text-gray-800';
+            }
+        }
+        
+        // Helper: Format label from camelCase or snake_case
+        function formatLabel(str) {
+            return str
+                .replace(/_/g, ' ')
+                .replace(/([A-Z])/g, ' $1')
+                .replace(/^./, function(str) { return str.toUpperCase(); });
+        }
+        
+        // Helper: Get ordinal suffix for year
+        function getYearSuffix(year) {
+            if (!year) return '';
+            
+            const num = parseInt(year);
+            if (isNaN(num)) return '';
+            
+            if (num === 1) return 'st';
+            if (num === 2) return 'nd';
+            if (num === 3) return 'rd';
+            return 'th';
+        }
+        
+        // Helper: Show error message
+        function showError(message) {
+            alert(message);
+        }
+    </script>
+</body>
+</html>

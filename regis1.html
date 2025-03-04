@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Event Registration</title>
+    <link rel="stylesheet" href="./css/reg_style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js"></script>
+  </head>
+  <body>
+    <!-- Success Popup -->
+    <div id="successPopup" class="popup" style="display: none">
+      <div class="popup-content">
+        <div class="checkmark">
+          <svg viewBox="0 0 52 52">
+            <circle class="circle" cx="26" cy="26" r="25" fill="none" />
+            <path class="check" fill="none" d="M14 27l7 7 16-16" />
+          </svg>
+        </div>
+        <h2>Registration Successful!</h2>
+        <p>Your registration has been successfully submitted.</p>
+      </div>
+    </div>
+
+    <div class="container">
+      <h2>TechincalEvent Registration</h2>
+
+      <form id="registrationForm">
+        <label for="eventSelect">Select Event:</label>
+        <select id="eventSelect" required>
+          <option value="" disabled selected>Select an Event</option>
+          <!-- Original Events -->
+
+          <option
+            value="money_heist"
+            data-members-min="4"
+            data-members-max="5"
+            data-price="400"
+          >
+            Money Heist
+          </option>
+          <option
+            value="squid_game"
+            data-members-min="1"
+            data-members-max="2"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            Squid Game
+          </option>
+          <option
+            value="ipl_auction"
+            data-members-min="4"
+            data-members-max="5"
+            data-price="400"
+          >
+            IPL Auction
+          </option>
+          <option
+            value="algo_arena"
+            data-members-min="3"
+            data-members-max="4"
+            data-price="150"
+          >
+            Algo Arena
+          </option>
+          <option
+            value="tech_talks"
+            data-members-min="1"
+            data-members-max="1"
+            data-price-type="per_head"
+            data-price="50"
+          >
+            TDEX Talks
+          </option>
+          <option
+            value="tech_warzone"
+            data-members-min="1"
+            data-members-max="2"
+            data-price="100"
+          >
+            Tech Warzone
+          </option>
+          <option
+            value="decrypt_x"
+            data-members-min="4"
+            data-members-max="4"
+            data-price="150"
+          >
+            Decrypt X
+          </option>
+          <option
+            value="bidsmart"
+            data-members-min="4"
+            data-members-max="5"
+            data-price="300"
+          >
+            BidSmart: Mobile Edition
+          </option>
+
+          <!-- New Events -->
+          <option
+            value="kits_thub"
+            data-members-min="1"
+            data-members-max="2"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            KITS T-HUB
+          </option>
+          <option
+            value="bid_build"
+            data-members-min="1"
+            data-members-max="2"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            BID & BUILD
+          </option>
+          <option
+            value="bid_build_2"
+            data-members="5"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            BID & BUILD (Team of 5)
+          </option>
+          <option
+            value="treasure_hunt"
+            data-members="5"
+            data-price-type="per_head"
+            data-price="100"
+          >
+             TREASURE HUNT (Team of 5)
+          </option>
+          <option
+            value="enigma"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="50"
+          >
+            ENIGMA
+          </option>
+          <option
+            value="adzap"
+            data-members-min="1"
+            data-members-max="2"
+            data-price-type="per_team"
+            data-price="100"
+          >
+            ADZAP
+          </option>
+          <option
+            value="meme_making"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="50"
+          >
+            MEME MAKING
+          </option>
+          <option
+            value="poster_presentation"
+            data-members-min="1"
+            data-members-max="2"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            POSTER PRESENTATION
+          </option>
+          <option
+            value="ppt_presentation"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            PPT PRESENTATION
+          </option>
+          <option
+            value="logo_making"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="50"
+          >
+            LOGO MAKING
+          </option>
+          <option
+            value="innovation_expo"
+            data-members-min="1"
+            data-members-max="2"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            INNOVATION EXPO
+          </option>
+          <option
+            value="coding_debugging"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            CODING & DEBUGGING
+          </option>
+          <option
+            value="quiz_whiz"
+            data-members-min="3"
+            data-members-max="4"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            QUIZ WHIZ
+          </option>
+          <option
+            value="wealth_out_of_waste"
+            data-members="1"
+            data-price-type="per_head"
+            data-price="50"
+          >
+            WEALTH OUT OF WASTE
+          </option>
+          <option
+            value="cryptography"
+            data-members="2"
+            data-price-type="per_head"
+            data-price="100"
+          >
+            CRYPTOGRAPHY
+          </option>
+        </select>
+
+        <div id="teamSizeSelector" style="display: none">
+          <label for="teamSize">Select Team Size:</label>
+          <select id="teamSize">
+            <!-- Options will be dynamically populated -->
+          </select>
+        </div>
+
+        <label for="eventFee">Event Fee:</label>
+        <input type="text" id="eventFee" readonly />
+
+        <div class="qr-payment">
+          <h3>Scan & Pay</h3>
+          <canvas id="qrCodeCanvas"></canvas>
+          <p>Scan the QR Code to pay through PhonePe.</p>
+        </div>
+
+        <label for="transactionId">Transaction ID:</label>
+        <input
+          type="text"
+          id="transactionId"
+          name="transactionId"
+          required
+          placeholder="Enter Transaction ID"
+        />
+
+        <label for="fileUpload">Upload Payment Proof (Image Only):</label>
+        <input
+          type="file"
+          id="fileUpload"
+          name="fileUpload"
+          accept="image/*"
+          required
+        />
+
+        <label>Participants:</label>
+        <div id="participantContainer"></div>
+
+        <button type="submit" id="submitBtn">Register</button>
+      </form>
+    </div>
+
+    <script>
+        document.getElementById("eventSelect").addEventListener("change", function () {
+  let selectedOption = this.options[this.selectedIndex];
+  let eventValue = selectedOption.value;
+
+  // Get team size details
+  let fixedMembers = selectedOption.getAttribute("data-members");
+  let minMembers = selectedOption.getAttribute("data-members-min");
+  let maxMembers = selectedOption.getAttribute("data-members-max");
+  let price = selectedOption.getAttribute("data-price");
+  let priceType = selectedOption.getAttribute("data-price-type") || "fixed"; // default to fixed price
+
+  let teamSizeSelector = document.getElementById("teamSizeSelector");
+  let teamSizeSelect = document.getElementById("teamSize");
+
+  // Clear team size dropdown
+  teamSizeSelect.innerHTML = "";
+
+  // Handle variable team size
+  if (minMembers && maxMembers) {
+    teamSizeSelector.style.display = "block";
+
+    for (let i = parseInt(minMembers); i <= parseInt(maxMembers); i++) {
+      let option = document.createElement("option");
+      option.value = i;
+      option.textContent = i + (i === 1 ? " Member" : " Members");
+      teamSizeSelect.appendChild(option);
+    }
+
+    // Set default price for minimum team size
+    updateParticipantsAndPrice(parseInt(minMembers), price, priceType, eventValue);
+  } else if (fixedMembers) {
+    // Fixed team size
+    teamSizeSelector.style.display = "none";
+    updateParticipantsAndPrice(parseInt(fixedMembers), price, priceType, eventValue);
+  }
+});
+
+document.getElementById("teamSize").addEventListener("change", function () {
+  let selectedEvent = document.getElementById("eventSelect");
+  let selectedOption = selectedEvent.options[selectedEvent.selectedIndex];
+  let members = this.value;
+  let price = selectedOption.getAttribute("data-price");
+  let priceType = selectedOption.getAttribute("data-price-type") || "fixed";
+  let eventValue = selectedOption.value;
+
+  updateParticipantsAndPrice(parseInt(members), price, priceType, eventValue);
+});
+
+function updateParticipantsAndPrice(members, price, priceType, eventValue) {
+  let totalPrice = 0;
+
+  // Calculate price based on type
+  if (priceType === "per_head") {
+    totalPrice = members * parseInt(price);
+    document.getElementById("eventFee").value = `₹${totalPrice} (₹${price} per member)`;
+  } else if (priceType === "per_team") {
+    totalPrice = parseInt(price);
+    document.getElementById("eventFee").value = `₹${totalPrice} (per team)`;
+  } else {
+    // Fixed price
+    totalPrice = parseInt(price);
+    document.getElementById("eventFee").value = `₹${totalPrice}`;
+  }
+
+  // Update participant fields
+  let participantContainer = document.getElementById("participantContainer");
+  participantContainer.innerHTML = "";
+
+  for (let i = 1; i <= members; i++) {
+    let div = document.createElement("div");
+    div.classList.add("participant");
+    
+    // Base fields for all events
+    let baseFields = `
+      <label>Participant ${i} Name:</label>
+      <input type="text" name="participant${i}" required placeholder="Enter name">
+
+      <label>Participant ${i} Roll No:</label>
+      <input type="text" name="rollno${i}" required placeholder="Enter roll number">
+
+      <label>Participant ${i} Year:</label>
+      <select name="year${i}" required>
+          <option value="" disabled selected>Select Year</option>
+          <option value="1">1st Year</option>
+          <option value="2">2nd Year</option>
+          <option value="3">3rd Year</option>
+          <option value="4">4th Year</option>
+      </select>
+
+      <label>Participant ${i} Section:</label>
+      <select name="section${i}" required>
+          <option value="" disabled selected>Select Section</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
+      </select>
+    `;
+
+    // Event-specific fields
+    let eventFields = "";
+    
+    // Add custom fields based on event type
+    switch(eventValue) {
+      case "poster_presentation":
+      case "ppt_presentation":
+        eventFields += `
+          <label>Participant ${i} Topic:</label>
+          <input type="text" name="topic${i}" required placeholder="Enter presentation topic">
+        `;
+        break;
+      
+      case "innovation_expo":
+        eventFields += `
+          <label>Participant ${i} Project Title:</label>
+          <input type="text" name="project${i}" required placeholder="Enter project title">
+          
+          <label>Participant ${i} Project Description:</label>
+          <textarea name="description${i}" required placeholder="Brief description of your project"></textarea>
+        `;
+        break;
+      
+      case "coding_debugging":
+        eventFields += `
+          <label>Participant ${i} Preferred Programming Language:</label>
+          <select name="language${i}" required>
+            <option value="" disabled selected>Select Language</option>
+            <option value="C">C</option>
+            <option value="C++">C++</option>
+            <option value="Java">Java</option>
+            <option value="Python">Python</option>
+            <option value="JavaScript">JavaScript</option>
+          </select>
+        `;
+        break;
+        
+      case "tech_talks":
+        eventFields += `
+          <label>Participant ${i} Talk Subject:</label>
+          <input type="text" name="subject${i}" required placeholder="Enter talk subject">
+          
+          <label>Participant ${i} Duration (minutes):</label>
+          <select name="duration${i}" required>
+            <option value="" disabled selected>Select Duration</option>
+            <option value="5">5 minutes</option>
+            <option value="10">10 minutes</option>
+            <option value="15">15 minutes</option>
+          </select>
+        `;
+        break;
+        
+      case "wealth_out_of_waste":
+        eventFields += `
+          <label>Participant ${i} Material Requirements:</label>
+          <textarea name="materials${i}" placeholder="List any materials you need (optional)"></textarea>
+        `;
+        break;
+        
+      // Add more event-specific fields as needed
+    }
+
+    div.innerHTML = baseFields + eventFields;
+    participantContainer.appendChild(div);
+  }
+
+  generatePhonePeQR(totalPrice);
+}
+
+function generatePhonePeQR(amount) {
+  let phonePeUPI = "9985470971@ybl"; // Replace with actual UPI ID
+  let eventName = "KITS_YUVA_2K25"; // Add your event name here
+
+  // URL encode the event name to handle spaces and special characters
+  let encodedEventName = encodeURIComponent(eventName);
+
+  // Add the transaction note (tn) parameter with the event name
+  let upiLink = `upi://pay?pa=${phonePeUPI}&pn=Event+Organizer&am=${amount}&cu=INR&tn=${encodedEventName}`;
+
+  new QRious({
+    element: document.getElementById("qrCodeCanvas"),
+    value: upiLink,
+    size: 200,
+  });
+}
+
+document.getElementById("registrationForm").addEventListener("submit", function (event) {
+  event.preventDefault();
+  registerEvent();
+});
+
+function registerEvent() {
+  let submitBtn = document.getElementById("submitBtn");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Submitting...";
+
+  // Get form data
+  let selectedEvent = document.getElementById("eventSelect");
+  let eventName = selectedEvent.options[selectedEvent.selectedIndex].text;
+  let eventValue = selectedEvent.options[selectedEvent.selectedIndex].value;
+  let selectedOption = selectedEvent.options[selectedEvent.selectedIndex];
+  let priceType = selectedOption.getAttribute("data-price-type") || "fixed";
+  let basePrice = selectedOption.getAttribute("data-price");
+
+  // Get team size (either from dropdown or fixed)
+  let teamSize;
+  if (document.getElementById("teamSizeSelector").style.display !== "none") {
+    teamSize = parseInt(document.getElementById("teamSize").value);
+  } else {
+    teamSize = parseInt(selectedOption.getAttribute("data-members") || 1);
+  }
+
+  // Calculate total price
+  let totalPrice;
+  if (priceType === "per_head") {
+    totalPrice = teamSize * parseInt(basePrice);
+  } else if (priceType === "per_team") {
+    totalPrice = parseInt(basePrice);
+  } else {
+    totalPrice = parseInt(basePrice);
+  }
+
+  let transactionId = document.getElementById("transactionId").value;
+  let fileInput = document.getElementById("fileUpload").files[0];
+
+  // Form validation
+  if (!eventName || !transactionId || !fileInput) {
+    alert("Please fill all required fields");
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Register";
+    return;
+  }
+
+  // Validate transaction ID format (basic validation)
+  if (transactionId.length < 6) {
+    alert("Please enter a valid transaction ID");
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Register";
+    return;
+  }
+
+  // Create FormData object
+  let formData = new FormData();
+  formData.append("eventName", eventName);
+  formData.append("eventValue", eventValue);
+  
+  // Match the parameter name expected by the backend
+  formData.append("price", totalPrice.toString());
+  formData.append("transactionId", transactionId);
+  formData.append("fileUpload", fileInput);
+
+  // Get participant container and all participant divs
+  let participantContainer = document.getElementById("participantContainer");
+  let participantDivs = participantContainer.querySelectorAll(".participant");
+  
+  // Add participant count to help backend processing
+  formData.append("participantCount", teamSize.toString());
+
+  // Validate and collect participant data
+  let isValid = true;
+  participantDivs.forEach((div, index) => {
+    const num = index + 1;
+    
+    // Process all input elements for this participant
+    const inputs = div.querySelectorAll('input, select, textarea');
+    
+    inputs.forEach(input => {
+      if (input.required && !input.value) {
+        alert(`Please complete all required fields for Participant ${num}`);
+        isValid = false;
+        return;
+      }
+      
+      // Add all form fields to formData
+      formData.append(input.name, input.value);
+    });
+  });
+
+  if (!isValid) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Register";
+    return;
+  }
+
+  // Debug logging
+  console.log("Submitting registration for:", eventName);
+  console.log("Team size:", teamSize);
+  console.log("Price:", totalPrice);
+  console.log("Transaction ID:", transactionId);
+  
+  // Log all form data for debugging
+  for (let pair of formData.entries()) {
+    console.log(pair[0] + ': ' + pair[1]);
+  }
+
+  // Send request to backend
+  fetch("http://127.0.0.1:5000/register", {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => {
+      console.log("Response status:", response.status);
+      return response.json();
+    })
+    .then((data) => {
+      console.log("Server response:", data);
+      if (data.success) {
+        document.getElementById("successPopup").style.display = "block";
+        setTimeout(() => (window.location.href = "success.html"), 3000);
+      } else {
+        throw new Error(data.error || "Registration failed");
+      }
+    })
+    .catch((error) => {
+      console.error("Registration error:", error);
+      alert("Error: " + error.message);
+    })
+    .finally(() => {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Register";
+    });
+}    </script>
+  </body>
+</html>
