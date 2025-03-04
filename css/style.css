@@ -16223,6 +16223,7 @@ img {
 }
 
 /* -------------------------------------------------- 
+
     design for 480px
     /* -------------------------------------------------- */
 
@@ -16230,6 +16231,10 @@ img {
   .container {
     padding-left: 30px;
     padding-right: 30px;
+  }
+  
+  .container h1{
+    font-size: 28px;
   }
 
   .feature-box-image,
