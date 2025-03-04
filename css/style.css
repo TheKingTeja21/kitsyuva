@@ -179,40 +179,57 @@ body {
 }
 
 /* Responsive Design */
+/* Responsive Design */
+@media (max-width: 1024px) { 
+  .card-container {
+    flex-wrap: wrap;
+    height: auto;
+    justify-content: center;
+    padding: 30px;
+  }
+  .card {
+    width: 80vw;
+    max-width: 280px;
+    height: 350px;
+  }
+}
+
 @media (max-width: 768px) {
   .card-container {
     flex-direction: column;
     height: auto;
     justify-content: flex-start;
-    padding-top: 50px;
+    padding-top: 40px;
   }
   .card {
-    width: 90vw;
-    height: auto;
+    width: 85vw;
+    max-width: 260px;
+    height: 330px;
   }
   .title {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 }
 
 @media (max-width: 480px) {
   .card-container {
     height: auto;
-    padding: 40px;
+    padding: 20px;
   }
   .card {
-    width: 95vw;
-    height: auto;
+    width: 90vw;
+    max-width: 240px;
+    height: 320px;
     margin: 10px 0;
   }
   .title {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
   .card:hover .title {
-    transform: translate3d(0%, -30px, 50px);
+    transform: translate3d(0%, -25px, 50px);
   }
   .card:hover .wrapper {
-    transform: perspective(600px) translateY(-3%) rotateX(15deg) translateZ(0);
+    transform: perspective(500px) translateY(-2%) rotateX(12deg) translateZ(0);
   }
 }
 
